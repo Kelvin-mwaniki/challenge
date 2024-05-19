@@ -1,0 +1,76 @@
+abstract class Animal {
+  String name;
+  int age;
+
+  void eat() {
+    print('$name is eating.');
+  }
+
+  void sleep() {
+    print('$name is sleeping.');
+  }
+}
+
+class Bird extends Animal {
+  String type;
+
+  Bird(this.name, this.age, this.type);
+
+  @override
+  void eat() {
+    print('$name (a $type) is eating.');
+  }
+}
+abstract class Flyable {
+  void fly();
+}
+
+class Sparrow extends Bird with Flyable {
+  Sparrow(String name, int age) : super(name, age, 'sparrow');
+
+  @override
+  void fly() {
+    print('$name is flapping its wings and flying.');
+  }
+}
+@override
+void eat() {
+  print('$name (a $type) is eating.');
+}
+import 'dart:convert';
+import 'dart:io';
+
+Future<List<Bird>> readBirdsFromFile(String filename) async {
+  final file = File(filename);
+  final contents = await file.readAsString();
+  final json = jsonDecode(contents);
+  final birds = <Bird>[];
+  for (final birdJson in json) {
+    birds.add(Bird.fromJson(birdJson));
+  }
+  return birds;
+}
+
+class Bird extends Animal {
+  String type;
+
+  Bird(this.name, this.age, this.type);
+
+  Bird.fromJson(Map<String, dynamic> json)
+      : name = json['name'],
+        age = json['age'],
+        type = json['type'];
+
+  @override
+  void eat() {
+    print('$name (a $type) is eating.');
+  }
+}
+void main() async {
+  final birds = await readBirdsFromFile('birds.json');
+  for (final bird in birds) {
+    print('Name: ${bird.name}, Type: ${bird.type}');
+    bird.eat();
+    bird.fly();
+  }
+}
